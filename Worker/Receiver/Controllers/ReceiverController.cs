@@ -84,11 +84,8 @@ public class ReceiverController : ControllerBase
 
     Task ErrorHandler(ProcessErrorEventArgs args)
     {
-        // the error source tells me at what point in the processing an error occurred
         Console.WriteLine(args.ErrorSource);
-        // the fully qualified namespace is available
         Console.WriteLine(args.FullyQualifiedNamespace);
-        // as well as the entity path
         Console.WriteLine(args.EntityPath);
         Console.WriteLine(args.Exception.ToString());
         return Task.CompletedTask;
