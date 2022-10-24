@@ -42,7 +42,7 @@ public class ServiceBusManager
         try
         {
             await sender.SendMessagesAsync(messageBatch);
-            Console.WriteLine($"Message {message} has sent to queue");
+            Console.WriteLine($"Message {message} has sent to queue/topic");
         }
         finally
         {
@@ -54,6 +54,26 @@ public class ServiceBusManager
     {
         init();
         receiver = client.CreateReceiver(queue);
+
+        try
+        {
+            ServiceBusReceivedMessage receivedMessage = await receiver.ReceiveMessageAsync();
+            if (complete)
+            {
+                await receiver.CompleteMessageAsync(receivedMessage);
+            }
+            return receivedMessage.Body.ToString();
+        }
+        finally
+        {
+            await receiver.DisposeAsync();
+        }
+    }
+
+    public async Task<string> receiveOne(string topic, string subscription, bool complete)
+    {
+        init();
+        receiver = client.CreateReceiver(topic, subscription);
 
         try
         {
@@ -82,6 +102,18 @@ public class ServiceBusManager
         processor.ProcessMessageAsync += messageHandler;
     }
 
+    public void registerMessageHandler(string topic, string subscription, Func<ProcessMessageEventArgs, Task> messageHandler)
+    {
+        init();
+        //TODO vielleicht müssen wir ihn hier immer neu erzeugen. Weil sonst vielleicht bei Startprocessing ein alter benutzt wird. Also einer von einer anderen Queue
+        if (null == processor)
+        {
+            processor = client.CreateProcessor(topic, subscription);
+        }
+
+        processor.ProcessMessageAsync += messageHandler;
+    }
+
     public void registerErrorHandler(string queue, Func<ProcessErrorEventArgs, Task> errorHandler)
     {
         init();
@@ -92,6 +124,18 @@ public class ServiceBusManager
 
         processor.ProcessErrorAsync += errorHandler;
     }
+
+    public void registerErrorHandler(string topic, string subscription, Func<ProcessErrorEventArgs, Task> errorHandler)
+    {
+        init();
+        if (null == processor)
+        {
+            processor = client.CreateProcessor(topic, subscription);
+        }
+
+        processor.ProcessErrorAsync += errorHandler;
+    }
+
 
     public async Task StartProcessing(string queue)
     {
