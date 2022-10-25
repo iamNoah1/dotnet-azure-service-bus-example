@@ -17,3 +17,6 @@ This project not only shows how to implement the mirroring pattern, it can be us
 * POST `host/dataingress?topicName=<topicname>` with some body payload as json - sends the json body payload as string message to the topic
 
 ## Receiver Endpoints
+* POST `host/receiver/failone` - Grabs a message, but mocks failing to process that message by not completing it
+* POST `host/receiver/succeedone` - Grabs a message and succeeds processing that message
+* POST `host/receiver/processall` - Grab all available messages and succeds processing them

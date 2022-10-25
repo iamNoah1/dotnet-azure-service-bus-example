@@ -6,6 +6,8 @@ This repository contains projects that show examples on how to work an Azure Ser
 
 * [Worker](/Worker/readme.md) pattern, where a message is sent to a queue and having only one of multiple potential subsribers procesing that message. 
 
+Note that for both scenarios a message is only removed from a queue or topic + subscription, if a subscriber successfully processed the message (completing is the more specific term, with relates better to the code part). Otherwise the message will be put back to the queue or topic + subscription so that the a subscriber can try again. 
+
 ## Prerequisites
 * Dotnet installed
 * A Service Bus instance either on Azure or locally using Azurite for example
