@@ -15,7 +15,7 @@ ServiceBusManager manager = new ServiceBusManager(connectionString);
 Console.WriteLine("Writing some messages to the queue");
 
 for (int i = 0; i < 10; i++) {
-    await manager.sendMessage(queueName, "Message Nr: " + i);
+    await manager.SendMessage(queueName, "Message Nr: " + i);
 
     await Task.Delay(500); //look busy
 }

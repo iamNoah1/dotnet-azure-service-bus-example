@@ -15,4 +15,5 @@ This project not only shows how to implement the worker pattern, it can be used 
 ## Receiver Endpoints
 * POST `host/receiver/failone` - Grabs a message, but mocks failing to process that message by not completing it
 * POST `host/receiver/succeedone` - Grabs a message and succeeds processing that message
-* POST `host/receiver/processall` - Grab all available messages and succeds processing them 
+* POST `host/receiver/processall` - Grab all available messages and succeds processing them
+* POST `host/receiver/stopProcessing` - Stops processing messages

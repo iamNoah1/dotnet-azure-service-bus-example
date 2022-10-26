@@ -1,5 +1,3 @@
-
-
 using Azure.Messaging.ServiceBus;
 using AzureServiceBus;
 using Microsoft.AspNetCore.Mvc;
@@ -25,7 +23,7 @@ public class ReceiverController : ControllerBase
         (string connectionString, string topicName, string subscriptionName) = GetServiceBusParams();
         manager = new ServiceBusManager(connectionString);
 
-        string message = await manager.receiveOne(topicName, subscriptionName, false);
+        string message = await manager.ReceiveOne(topicName, subscriptionName, false);
         logger.LogInformation("try to process message: " + message);
 
         return Ok();
@@ -37,7 +35,7 @@ public class ReceiverController : ControllerBase
         (string connectionString, string topicName, string subscriptionName) = GetServiceBusParams();
         manager = new ServiceBusManager(connectionString);
 
-        string message = await manager.receiveOne(topicName, subscriptionName, true);
+        string message = await manager.ReceiveOne(topicName, subscriptionName, true);
         logger.LogInformation("try to process message: " + message);
 
         return Ok();
@@ -49,12 +47,23 @@ public class ReceiverController : ControllerBase
         (string connectionString, string topicName, string subscriptionName) = GetServiceBusParams();
         manager = new ServiceBusManager(connectionString);
 
-        manager.registerMessageHandler(topicName, subscriptionName, MessageHandler);
-        manager.registerErrorHandler(topicName, subscriptionName, ErrorHandler);
+        manager.RegisterMessageHandler(topicName, subscriptionName, MessageHandler);
+        manager.RegisterErrorHandler(topicName, subscriptionName, ErrorHandler);
 
         await manager.StartProcessing(topicName);
 
         await Task.Delay(10000);
+
+        return Ok();
+    }
+
+    [HttpPost("stopProcessing")]
+    public async Task<IActionResult> StopProccessing()
+    {
+        (string connectionString, string topicName, string subscriptionName) = GetServiceBusParams();
+        manager = new ServiceBusManager(connectionString);
+
+        await manager.StopProcessing(topicName, subscriptionName);
 
         return Ok();
     }

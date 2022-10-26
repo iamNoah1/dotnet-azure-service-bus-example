@@ -26,7 +26,7 @@ public class ServiceBusManager
         }
     }
 
-    public async Task sendMessage(string queue, string message)
+    public async Task SendMessage(string queue, string message)
     {
         init();
 
@@ -50,7 +50,7 @@ public class ServiceBusManager
         }
     }
 
-    public async Task<string> receiveOne(string queue, bool complete)
+    public async Task<string> ReceiveOne(string queue, bool complete)
     {
         init();
         receiver = client.CreateReceiver(queue);
@@ -70,7 +70,7 @@ public class ServiceBusManager
         }
     }
 
-    public async Task<string> receiveOne(string topic, string subscription, bool complete)
+    public async Task<string> ReceiveOne(string topic, string subscription, bool complete)
     {
         init();
         receiver = client.CreateReceiver(topic, subscription);
@@ -90,7 +90,7 @@ public class ServiceBusManager
         }
     }
 
-    public void registerMessageHandler(string queue, Func<ProcessMessageEventArgs, Task> messageHandler)
+    public void RegisterMessageHandler(string queue, Func<ProcessMessageEventArgs, Task> messageHandler)
     {
         init();
         //TODO vielleicht müssen wir ihn hier immer neu erzeugen. Weil sonst vielleicht bei Startprocessing ein alter benutzt wird. Also einer von einer anderen Queue
@@ -102,7 +102,7 @@ public class ServiceBusManager
         processor.ProcessMessageAsync += messageHandler;
     }
 
-    public void registerMessageHandler(string topic, string subscription, Func<ProcessMessageEventArgs, Task> messageHandler)
+    public void RegisterMessageHandler(string topic, string subscription, Func<ProcessMessageEventArgs, Task> messageHandler)
     {
         init();
         //TODO vielleicht müssen wir ihn hier immer neu erzeugen. Weil sonst vielleicht bei Startprocessing ein alter benutzt wird. Also einer von einer anderen Queue
@@ -114,7 +114,7 @@ public class ServiceBusManager
         processor.ProcessMessageAsync += messageHandler;
     }
 
-    public void registerErrorHandler(string queue, Func<ProcessErrorEventArgs, Task> errorHandler)
+    public void RegisterErrorHandler(string queue, Func<ProcessErrorEventArgs, Task> errorHandler)
     {
         init();
         if (null == processor)
@@ -125,7 +125,7 @@ public class ServiceBusManager
         processor.ProcessErrorAsync += errorHandler;
     }
 
-    public void registerErrorHandler(string topic, string subscription, Func<ProcessErrorEventArgs, Task> errorHandler)
+    public void RegisterErrorHandler(string topic, string subscription, Func<ProcessErrorEventArgs, Task> errorHandler)
     {
         init();
         if (null == processor)
@@ -145,6 +145,36 @@ public class ServiceBusManager
             processor = client.CreateProcessor(queue);
         }
         await processor.StartProcessingAsync();
+    }
+
+    public async Task StartProcessing(string topic, string subscription)
+    {
+        init();
+        if (null == processor)
+        {
+            processor = client.CreateProcessor(topic, subscription);
+        }
+        await processor.StartProcessingAsync();
+    }
+
+    public async Task StopProcessing(string queue)
+    {
+        init();
+        if (null == processor)
+        {
+            processor = client.CreateProcessor(queue);
+        }
+        await processor.StopProcessingAsync();
+    }
+
+    public async Task StopProcessing(string topic, string subscription)
+    {
+        init();
+        if (null == processor)
+        {
+            processor = client.CreateProcessor(topic, subscription);
+        }
+        await processor.StopProcessingAsync();
     }
 
 }

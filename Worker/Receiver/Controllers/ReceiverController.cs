@@ -23,7 +23,7 @@ public class ReceiverController : ControllerBase
         (string connectionString, string queueName) = GetServiceBusParams();
         manager = new ServiceBusManager(connectionString);
 
-        string message = await manager.receiveOne(queueName, false);
+        string message = await manager.ReceiveOne(queueName, false);
         logger.LogInformation("try to process message: " + message);
 
         return Ok();
@@ -35,7 +35,7 @@ public class ReceiverController : ControllerBase
         (string connectionString, string queueName) = GetServiceBusParams();
         manager = new ServiceBusManager(connectionString);
 
-        string message = await manager.receiveOne(queueName, true);
+        string message = await manager.ReceiveOne(queueName, true);
         logger.LogInformation("try to process message: " + message);
 
         return Ok();
@@ -47,12 +47,23 @@ public class ReceiverController : ControllerBase
         (string connectionString, string queueName) = GetServiceBusParams();
         manager = new ServiceBusManager(connectionString);
 
-        manager.registerMessageHandler(queueName, MessageHandler);
-        manager.registerErrorHandler(queueName, ErrorHandler);
+        manager.RegisterMessageHandler(queueName, MessageHandler);
+        manager.RegisterErrorHandler(queueName, ErrorHandler);
 
         await manager.StartProcessing(queueName);
 
         await Task.Delay(10000);
+
+        return Ok();
+    }
+
+    [HttpPost("stopProcessing")]
+    public async Task<IActionResult> StopProccessing()
+    {
+        (string connectionString, string queueName) = GetServiceBusParams();
+        manager = new ServiceBusManager(connectionString);
+
+        await manager.StopProcessing(queueName);
 
         return Ok();
     }

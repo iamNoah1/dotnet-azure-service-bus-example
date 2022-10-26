@@ -22,7 +22,7 @@ public class DataIngress : ControllerBase
         string connectionString = System.Environment.GetEnvironmentVariable("SERVICE_BUS_CONNECTION_STRING");
 
         this.manager = new ServiceBusManager(connectionString);
-        await manager.sendMessage(topicName, payload.ToString());
+        await manager.SendMessage(topicName, payload.ToString());
 
         return new OkObjectResult(null);
     }
